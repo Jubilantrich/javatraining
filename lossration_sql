@@ -1,0 +1,18 @@
+SELECT 
+    p.InsuredRef,
+    YEAR(p.Commencement_Date) AS Commencement_Year,
+    SUM(p.Gross) AS Total_Gross_Premium,
+    SUM(p.Com_Expense) AS Total_Commission_Expense,
+    SUM(c.Clm_Paid) AS Total_Claim_Paid,
+    SUM(co.clmost) AS Total_Claim_Outstanding,
+    (SUM(c.Clm_Paid) + SUM(co.clmost)) / SUM(p.Gross) * 100 AS Loss_Ratio_Percentage
+FROM 
+    production_data p
+LEFT JOIN 
+    claims_data c ON p.InsuredRef = c.InsuredRef -- Claims Paid Data
+LEFT JOIN 
+    claims_outstanding_data co ON p.InsuredRef = co.InsuredRef -- Claims Outstanding Data
+WHERE 
+    p.InsuredRef = 'Your_InsuredRef' -- Replace with the specific InsuredRef
+GROUP BY 
+    p.InsuredRef, YEAR(p.Commencement_Date);
